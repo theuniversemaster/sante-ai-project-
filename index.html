@@ -27,7 +27,7 @@
             </div>
             <h1>Bienvenue sur SanteAI</h1>
             <p class="subtitle">Votre compagnon de santé personnel, pour vous aider à gérer votre bien-être.</p>
-            <button class="btn btn-primary" data-target="login-screen">Commencer</button>
+            <button class="btn btn-primary js-nav-trigger" data-target="login-screen">Commencer</button>
         </div>
 
         <!-- ===== Login/Profile Screen (Simplified) ===== -->
@@ -70,16 +70,16 @@
             <section class="dashboard-section">
                 <h3>Fonctionnalités</h3>
                 <div class="feature-grid">
-                    <button class="feature-btn" data-target="chat-screen">
+                    <button class="feature-btn js-nav-trigger" data-target="chat-screen">
                         <span class="material-symbols-outlined">chat_bubble</span> Parler à l'IA
                     </button>
-                    <button class="feature-btn" data-target="symptom-logger-screen">
+                    <button class="feature-btn js-nav-trigger" data-target="symptom-logger-screen">
                         <span class="material-symbols-outlined">local_hospital</span> Symptômes
                     </button>
-                    <button class="feature-btn" data-target="health-record-screen">
+                    <button class="feature-btn js-nav-trigger" data-target="health-record-screen">
                         <span class="material-symbols-outlined">folder_managed</span> Dossier
                     </button>
-                    <button class="feature-btn" data-target="settings-screen">
+                    <button class="feature-btn js-nav-trigger" data-target="settings-screen">
                          <span class="material-symbols-outlined">settings</span> Paramètres
                     </button>
                 </div>
@@ -89,7 +89,7 @@
         <!-- ===== Chat Screen ===== -->
         <div id="chat-screen" class="screen">
             <header class="screen-header fixed-header">
-                <button class="icon-btn back-btn" data-target="dashboard-screen">
+                <button class="icon-btn back-btn js-nav-trigger" data-target="dashboard-screen">
                     <span class="material-symbols-outlined">arrow_back_ios_new</span>
                 </button>
                 <h3>Assistant Santé</h3>
@@ -117,7 +117,7 @@
         <!-- ===== Symptom Logger Screen ===== -->
         <div id="symptom-logger-screen" class="screen">
             <header class="screen-header">
-                <button class="icon-btn back-btn" data-target="dashboard-screen">
+                <button class="icon-btn back-btn js-nav-trigger" data-target="dashboard-screen">
                     <span class="material-symbols-outlined">arrow_back_ios_new</span>
                 </button>
                 <h3>Nouveau Symptôme</h3>
@@ -151,7 +151,7 @@
         <!-- ===== Health Record Screen ===== -->
         <div id="health-record-screen" class="screen">
              <header class="screen-header">
-                <button class="icon-btn back-btn" data-target="dashboard-screen">
+                <button class="icon-btn back-btn js-nav-trigger" data-target="dashboard-screen">
                     <span class="material-symbols-outlined">arrow_back_ios_new</span>
                 </button>
                 <h3>Dossier de Santé</h3>
@@ -181,7 +181,7 @@
         <!-- ===== Settings/Profile Screen (NOW FUNCTIONAL) ===== -->
         <div id="settings-screen" class="screen">
             <header class="screen-header">
-                 <button class="icon-btn back-btn" data-target="dashboard-screen">
+                 <button class="icon-btn back-btn js-nav-trigger" data-target="dashboard-screen">
                     <span class="material-symbols-outlined">arrow_back_ios_new</span>
                 </button>
                 <h3>Profil et Paramètres</h3>
@@ -215,7 +215,7 @@
         <!-- ===== Appointments Screen (Proper Empty State) ===== -->
         <div id="appointments-screen" class="screen">
             <header class="screen-header">
-                <button class="icon-btn back-btn" data-target="dashboard-screen">
+                <button class="icon-btn back-btn js-nav-trigger" data-target="dashboard-screen">
                     <span class="material-symbols-outlined">arrow_back_ios_new</span>
                 </button>
                 <h3>Rendez-vous</h3>
@@ -233,7 +233,7 @@
         <!-- ===== Meds Screen (Proper Empty State) ===== -->
         <div id="meds-screen" class="screen">
             <header class="screen-header">
-                <button class="icon-btn back-btn" data-target="dashboard-screen">
+                <button class="icon-btn back-btn js-nav-trigger" data-target="dashboard-screen">
                     <span class="material-symbols-outlined">arrow_back_ios_new</span>
                 </button>
                 <h3>Médicaments</h3>
@@ -252,23 +252,23 @@
     
     <!-- Unified Bottom Navigation -->
     <nav id="bottom-nav">
-        <button class="nav-btn active" data-target="dashboard-screen">
+        <button class="nav-btn active js-nav-trigger" data-target="dashboard-screen">
             <span class="material-symbols-outlined">home</span>
             Accueil
         </button>
-        <button class="nav-btn" data-target="appointments-screen">
+        <button class="nav-btn js-nav-trigger" data-target="appointments-screen">
             <span class="material-symbols-outlined">calendar_month</span>
             Rendez-vous
         </button>
-        <button class="nav-btn" data-target="chat-screen">
+        <button class="nav-btn js-nav-trigger" data-target="chat-screen">
             <span class="material-symbols-outlined">chat_bubble</span>
             Parler
         </button>
-        <button class="nav-btn" data-target="health-record-screen">
+        <button class="nav-btn js-nav-trigger" data-target="health-record-screen">
             <span class="material-symbols-outlined">folder_managed</span>
             Dossier
         </button>
-         <button class="nav-btn" data-target="settings-screen">
+         <button class="nav-btn js-nav-trigger" data-target="settings-screen">
             <span class="material-symbols-outlined">person</span>
             Profil
         </button>

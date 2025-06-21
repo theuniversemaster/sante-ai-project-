@@ -1,4 +1,4 @@
-// SanteAI Script - V3.5
+// SanteAI Script - V3.6
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -59,13 +59,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const navButtons = document.querySelectorAll('.nav-btn');
     const bottomNav = document.getElementById('bottom-nav');
 
-    // CORRECTED in V3.5
     function navigateTo(screenId) {
         allScreens.forEach(screen => screen.classList.remove('active'));
         const targetScreen = document.getElementById(screenId);
         if (targetScreen) targetScreen.classList.add('active');
 
-        // CORRECTED & SIMPLIFIED: Now, only the button corresponding to the screenId will be active.
         navButtons.forEach(btn => {
             btn.classList.toggle('active', btn.dataset.target === screenId);
         });
@@ -76,17 +74,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderUI() {
         if (!santeAIData.profile) return;
 
-        // Calculate age
         santeAIData.profile.age = calculateAge(santeAIData.profile.dob);
 
-        // Dashboard
         document.querySelector('#dashboard-screen .profile-name').textContent = santeAIData.profile.name;
         document.querySelector('#dashboard-screen .avatar-placeholder').textContent = santeAIData.profile.initials;
         document.querySelector('#dashboard-screen .profile-meta').innerHTML = `${santeAIData.profile.age} ans &bull; Membre depuis ${santeAIData.profile.memberSince}`;
         document.getElementById('dashboard-appointment').textContent = santeAIData.dashboard.nextAppointment;
         document.getElementById('dashboard-meds').innerHTML = `${santeAIData.dashboard.medsTaken}/${santeAIData.dashboard.medsTotal}`;
         
-        // Health Record
         document.getElementById('record-name').textContent = santeAIData.profile.name;
         document.getElementById('record-dob').textContent = santeAIData.profile.dob;
         document.getElementById('record-age').textContent = santeAIData.profile.age;
@@ -97,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('record-medications').textContent = santeAIData.medicalHistory.medications;
         document.getElementById('record-vaccinations').textContent = santeAIData.medicalHistory.vaccinations;
 
-        // Settings Screen
         document.getElementById('settings-profile-name').textContent = santeAIData.profile.name;
         document.querySelector('#settings-screen .avatar-placeholder').textContent = santeAIData.profile.initials;
         document.getElementById('settings-profile-meta').textContent = `Membre depuis ${santeAIData.profile.memberSince}`;
@@ -120,35 +114,33 @@ document.addEventListener('DOMContentLoaded', () => {
     // ===================================================================================
     // 3. EVENT LISTENERS
     // ===================================================================================
-    
-    // NEW HELPER FUNCTION in V3.5
     function populateProfileModal() {
-        // Populate with profile data
         const dob = santeAIData.profile.dob;
-        // The date input requires YYYY-MM-DD format. Handle "Non défini".
         document.getElementById('edit-dob').value = (dob && dob !== "Non défini") ? dob : '';
         document.getElementById('edit-sex').value = santeAIData.profile.sex || "Non défini";
         document.getElementById('edit-blood-type').value = santeAIData.profile.bloodType || "Non défini";
-        
-        // Populate with medical history data
         document.getElementById('edit-allergies').value = (santeAIData.medicalHistory.allergies !== "Aucune") ? santeAIData.medicalHistory.allergies : '';
         document.getElementById('edit-conditions').value = (santeAIData.medicalHistory.conditions !== "Aucune") ? santeAIData.medicalHistory.conditions : '';
     }
 
-    // UPDATED in V3.5
     function setupEventListeners() {
-        // Main navigation click listener
+        // ### CRITICAL FIX V3.6 ###
+        // This listener now ONLY triggers for elements with the 'js-nav-trigger' class.
         document.body.addEventListener('click', (e) => {
-            const navTarget = e.target.closest('[data-target]');
-            if (navTarget && !['login-btn', 'logout-btn'].includes(navTarget.id)) {
-                navigateTo(navTarget.dataset.target);
+            const navTrigger = e.target.closest('.js-nav-trigger');
+            if (navTrigger) {
+                const targetScreenId = navTrigger.dataset.target;
+                if (targetScreenId) {
+                    navigateTo(targetScreenId);
+                }
             }
         });
 
-        // Specific button listeners
+        // --- Specific button listeners remain unchanged ---
         document.getElementById('login-btn').addEventListener('click', handleLogin);
         document.getElementById('logout-btn').addEventListener('click', logout);
         document.getElementById('symptom-submit-btn').addEventListener('click', handleSymptomSubmit);
+        
         document.getElementById('symptom-intensity').addEventListener('input', (e) => {
             document.getElementById('intensity-value').textContent = e.target.value;
         });
@@ -165,10 +157,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Modal listeners (UPDATED)
+        // Modal listeners
         const modal = document.getElementById('edit-profile-modal');
         const openModal = () => {
-            populateProfileModal(); // <-- FIX IS HERE: Populate form before showing
+            populateProfileModal();
             modal.style.display = 'flex';
         };
         document.getElementById('edit-profile-btn').addEventListener('click', openModal);
@@ -203,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
         saveData();
         alert("Symptômes enregistrés !");
         document.getElementById('symptom-form').reset();
-        document.getElementById('intensity-value').textContent = '5'; // Reset slider UI
+        document.getElementById('intensity-value').textContent = '5';
         navigateTo('dashboard-screen');
     }
 
@@ -267,7 +259,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     async function askMistral(currentChatHistory) {
-        // This function remains largely the same, but is now more robust.
         const systemPrompt = {
             role: 'system',
             content: `Tu es SanteAI, un assistant de santé IA empathique. Ton but est d'aider l'utilisateur à suivre ses symptômes et à comprendre son bien-être, en te basant sur les infos fournies. **Règles critiques:** 1. **NE JAMAIS** poser de diagnostic. 2. **NE JAMAIS** prescrire de traitement. 3. **TOUJOURS** recommander de consulter un professionnel de santé (médecin, pharmacien) pour un avis médical. 4. Utilise un ton rassurant et clair. 5. Réponds en français et formate les points importants en gras (**texte en gras**).`
@@ -278,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
         contextContent += `\n[FIN DU CONTEXTE]`;
 
         const userContextPrompt = { role: 'user', content: contextContent };
-        const messagesForAPI = [ systemPrompt, userContextPrompt, ...currentChatHistory.slice(-10) ]; // Send last 10 messages for context
+        const messagesForAPI = [ systemPrompt, userContextPrompt, ...currentChatHistory.slice(-10) ];
 
         const response = await fetch('/.netlify/functions/ask-mistral', {
             method: 'POST', body: JSON.stringify({ messages: messagesForAPI })
