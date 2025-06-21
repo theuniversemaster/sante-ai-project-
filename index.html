@@ -1,199 +1,216 @@
-<!-- index.html — version complète refondue -->
+<!-- index.html — version complète et fonctionnelle -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>SanteAI</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>SanteAI</title>
 
-<!-- Google Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap" rel="stylesheet" />
 
-<!-- Material Symbols -->
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:FILL@0..1" rel="stylesheet" />
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:FILL@0..1" rel="stylesheet" />
 
-<link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 <div id="app" role="application">
-<!-- =============== Welcome =============== -->
-<section id="welcome-screen" class="screen active" aria-labelledby="welcome-title">
-<div class="welcome-illustration" aria-hidden="true">
-<span class="material-symbols-outlined">health_and_safety</span>
+    <!-- =============== Welcome =============== -->
+    <section id="welcome-screen" class="screen active" aria-labelledby="welcome-title">
+        <div class="welcome-illustration" aria-hidden="true">
+            <span class="material-symbols-outlined">health_and_safety</span>
+        </div>
+        <h1 id="welcome-title">Bienvenue à SanteAI</h1>
+        <p class="subtitle">Votre compagnon de santé personnel alimenté par l’IA.</p>
+        <button class="btn-primary" data-target="login-screen">Commencer</button>
+    </section>
+
+    <!-- =============== Login =============== -->
+    <section id="login-screen" class="screen" aria-labelledby="login-title">
+        <h2 id="login-title">Quel est votre profil ?</h2>
+        <p class="subtitle">Entrez un nom pour charger ou créer un profil.</p>
+        <label class="form-field">
+            <span>Nom du profil</span>
+            <input id="username" name="username" autocomplete="username" placeholder="Ex: Jean Dupont" />
+        </label>
+        <button id="login-btn" class="btn-primary">Accéder au profil</button>
+    </section>
+
+    <!-- =============== Dashboard =============== -->
+    <section id="dashboard-screen" class="screen" aria-labelledby="dash-title">
+        <header class="dash-header">
+            <div>
+                <div class="avatar-placeholder" aria-hidden="true"></div>
+                <div class="profile-infos">
+                    <p class="profile-name"></p>
+                    <p class="profile-meta"></p>
+                </div>
+            </div>
+        </header>
+        <h3 id="dash-title">Aperçu rapide</h3>
+        <div class="card-grid">
+            <article class="card">
+                <h4>Prochain rendez-vous</h4>
+                <p id="dashboard-appointment" class="card-highlight"></p>
+            </article>
+            <article class="card">
+                <h4>Médicaments</h4>
+                <p id="dashboard-meds" class="card-highlight"></p>
+            </article>
+        </div>
+        <h3>Fonctionnalités</h3>
+        <nav class="feature-grid" aria-label="Fonctionnalités">
+            <button class="feature-btn" data-target="chat-screen">
+                <span class="material-symbols-outlined">chat_bubble</span><span>Parler à l’IA</span>
+            </button>
+            <button class="feature-btn" data-target="appointments-screen">
+                <span class="material-symbols-outlined">calendar_month</span><span>Rendez-vous</span>
+            </button>
+            <button class="feature-btn" data-target="symptom-logger-screen">
+                <span class="material-symbols-outlined">local_hospital</span><span>Symptômes</span>
+            </button>
+            <button class="feature-btn" data-target="health-record-screen">
+                <span class="material-symbols-outlined">folder_managed</span><span>Dossier Santé</span>
+            </button>
+        </nav>
+    </section>
+
+    <!-- =============== Chat =============== -->
+    <section id="chat-screen" class="screen" aria-labelledby="chat-title">
+        <header class="fixed-header">
+            <button class="icon-btn" data-target="dashboard-screen" aria-label="Retour"><span class="material-symbols-outlined">arrow_back</span></button>
+            <h3 id="chat-title">Discussion santé</h3>
+            <div aria-hidden="true" style="width:44px"></div>
+        </header>
+        <div class="chat-content" role="log" aria-live="polite"></div>
+        <div class="chat-input-area">
+            <input type="text" placeholder="Posez une question…" aria-label="Message" />
+            <button class="icon-btn send-btn" aria-label="Envoyer"><span class="material-symbols-outlined">send</span></button>
+        </div>
+    </section>
+
+    <!-- =============== Symptom logger =============== -->
+    <section id="symptom-logger-screen" class="screen" aria-labelledby="symptom-title">
+        <header class="fixed-header">
+            <button class="icon-btn" data-target="dashboard-screen" aria-label="Retour"><span class="material-symbols-outlined">arrow_back</span></button>
+            <h3 id="symptom-title">Suivi des symptômes</h3>
+            <div aria-hidden="true" style="width:44px"></div>
+        </header>
+        <form id="symptom-form" class="content-form" novalidate>
+            <label class="form-field"><span>Symptôme</span><input id="symptom-description" required /></label>
+            <label class="form-field"><span>Localisation</span><input id="symptom-location" /></label>
+            <label class="form-field range-field"><span>Intensité : <strong id="intensity-value">5</strong>/10</span><input id="symptom-intensity" type="range" min="0" max="10" value="5" /></label>
+            <label class="form-field"><span>Facteurs aggravants</span><input id="symptom-aggravating" /></label>
+            <label class="form-field"><span>Facteurs apaisants</span><input id="symptom-appeasing" /></label>
+            <button id="symptom-submit-btn" type="button" class="btn-primary">Enregistrer</button>
+        </form>
+    </section>
+    
+    <!-- =============== Health Record Screen (Implemented) =============== -->
+    <section id="health-record-screen" class="screen" aria-labelledby="record-title">
+        <header class="fixed-header">
+            <button class="icon-btn" data-target="dashboard-screen" aria-label="Retour"><span class="material-symbols-outlined">arrow_back</span></button>
+            <h3 id="record-title">Dossier de Santé</h3>
+            <button id="edit-profile-btn" class="icon-btn" aria-label="Modifier le profil"><span class="material-symbols-outlined">edit</span></button>
+        </header>
+        <div class="record-container">
+            <section class="record-section">
+                <h4>Informations personnelles</h4>
+                <div class="record-item"><span class="record-label">Nom</span><span class="record-value" id="record-name"></span></div>
+                <div class="record-item"><span class="record-label">Date de naissance</span><span class="record-value" id="record-dob"></span></div>
+                <div class="record-item"><span class="record-label">Sexe</span><span class="record-value" id="record-sex"></span></div>
+                <div class="record-item"><span class="record-label">Groupe sanguin</span><span class="record-value" id="record-blood-type"></span></div>
+            </section>
+            <section class="record-section">
+                <h4>Historique médical</h4>
+                <div class="record-item"><span class="record-label">Allergies</span><span class="record-value" id="record-allergies"></span></div>
+                <div class="record-item"><span class="record-label">Conditions chroniques</span><span class="record-value" id="record-conditions"></span></div>
+                <div class="record-item"><span class="record-label">Médicaments actuels</span><span class="record-value" id="record-medications"></span></div>
+                <div class="record-item"><span class="record-label">Vaccinations</span><span class="record-value" id="record-vaccinations"></span></div>
+            </section>
+        </div>
+    </section>
+
+    <!-- =============== Appointments Screen (Implemented) =============== -->
+    <section id="appointments-screen" class="screen" aria-labelledby="appointments-title">
+        <header class="fixed-header">
+            <button class="icon-btn" data-target="dashboard-screen" aria-label="Retour"><span class="material-symbols-outlined">arrow_back</span></button>
+            <h3 id="appointments-title">Rendez-vous</h3>
+            <button id="add-appointment-btn" class="icon-btn" aria-label="Ajouter un rendez-vous"><span class="material-symbols-outlined">add_circle</span></button>
+        </header>
+        <div id="appointments-list"></div>
+        <div id="appointments-empty" class="empty-state">
+            <span class="material-symbols-outlined">calendar_month</span>
+            <h4>Aucun rendez-vous</h4>
+            <p>Appuyez sur '+' pour en ajouter un.</p>
+        </div>
+    </section>
+
+    <!-- =============== Settings =============== -->
+    <section id="settings-screen" class="screen" aria-labelledby="settings-title">
+        <header class="fixed-header">
+            <button class="icon-btn" data-target="dashboard-screen" aria-label="Retour"><span class="material-symbols-outlined">arrow_back</span></button>
+            <h3 id="settings-title">Profil & paramètres</h3>
+            <div aria-hidden="true" style="width:44px"></div>
+        </header>
+        <div class="setting-block">
+            <label class="switch"><input id="dark-toggle" type="checkbox" /><span class="slider"></span></label>
+            <span>Mode sombre</span>
+        </div>
+        <button id="logout-btn" class="btn-danger">Changer de profil</button>
+    </section>
+
+    <!-- =============== Bottom nav =============== -->
+    <nav id="bottom-nav" aria-label="Navigation principale">
+        <button class="nav-btn active" data-target="dashboard-screen"><span class="material-symbols-outlined">home</span><span>Accueil</span></button>
+        <button class="nav-btn" data-target="appointments-screen"><span class="material-symbols-outlined">calendar_month</span><span>RDV</span></button>
+        <button class="nav-btn" data-target="chat-screen"><span class="material-symbols-outlined">chat_bubble</span><span>Parler</span></button>
+        <button class="nav-btn" data-target="health-record-screen"><span class="material-symbols-outlined">folder_managed</span><span>Dossier</span></button>
+        <button class="nav-btn" data-target="settings-screen"><span class="material-symbols-outlined">settings</span><span>Profil</span></button>
+    </nav>
 </div>
-<h1 id="welcome-title">Bienvenue à SanteAI</h1>
-<p class="subtitle">Votre compagnon de santé personnel alimenté par l’IA.</p>
-<button class="btn-primary" data-target="login-screen">Commencer</button>
-</section>
 
-<!-- =============== Login =============== -->
-<section id="login-screen" class="screen" aria-labelledby="login-title">
-<h2 id="login-title">Connexion</h2>
-
-<label class="form-field">
-<span>Nom d’utilisateur</span>
-<input id="username" name="username" autocomplete="username" />
-</label>
-
-<label class="form-field">
-<span>Mot de passe</span>
-<input id="password" type="password" autocomplete="current-password" />
-</label>
-
-<button id="login-btn" class="btn-primary">Se connecter</button>
-<p class="link-text">Pas de compte ?</p>
-<button class="btn-secondary">S’inscrire</button>
-</section>
-
-<!-- =============== Dashboard =============== -->
-<section id="dashboard-screen" class="screen" aria-labelledby="dash-title">
-<header class="dash-header">
-<div>
-<div class="avatar-placeholder" aria-hidden="true"></div>
-<div class="profile-infos">
-<p class="profile-name"></p>
-<p class="profile-meta"></p>
-</div>
-</div>
-<button class="icon-btn" data-target="settings-screen" aria-label="Paramètres">
-<span class="material-symbols-outlined">settings</span>
-</button>
-</header>
-
-<h3 id="dash-title">Aperçu</h3>
-<div class="card-grid">
-<article class="card">
-<h4>Prochain rendez-vous</h4>
-<p id="dashboard-appointment" class="card-highlight"></p>
-</article>
-<article class="card">
-<h4>Médicaments</h4>
-<p id="dashboard-meds" class="card-highlight"></p>
-</article>
+<!-- =============== Modals =============== -->
+<div id="profile-edit-modal" class="modal-overlay">
+    <div class="modal-content">
+        <header class="modal-header">
+            <h3>Modifier le profil</h3>
+            <button class="icon-btn close-modal-btn" aria-label="Fermer"><span class="material-symbols-outlined">close</span></button>
+        </header>
+        <form id="profile-edit-form">
+            <label class="form-field"><span>Date de naissance</span><input type="date" id="edit-dob" /></label>
+            <label class="form-field"><span>Sexe</span><select id="edit-sex"><option value="Non défini">Non spécifié</option><option value="Homme">Homme</option><option value="Femme">Femme</option><option value="Autre">Autre</option></select></label>
+            <label class="form-field"><span>Groupe sanguin</span><select id="edit-blood-type"><option value="Non défini">Inconnu</option><option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option><option value="B-">B-</option><option value="AB+">AB+</option><option value="AB-">AB-</option><option value="O+">O+</option><option value="O-">O-</option></select></label>
+            <label class="form-field"><span>Allergies</span><input id="edit-allergies" placeholder="Ex: Pollen, Pénicilline" /></label>
+            <label class="form-field"><span>Conditions chroniques</span><input id="edit-conditions" placeholder="Ex: Asthme, Diabète" /></label>
+            <label class="form-field"><span>Médicaments</span><input id="edit-medications" placeholder="Ex: Ventoline, Metformine" /></label>
+            <label class="form-field"><span>Vaccinations</span><input id="edit-vaccinations" placeholder="Ex: Tétanos (2022)" /></label>
+            <button type="submit" class="btn-primary">Enregistrer</button>
+        </form>
+    </div>
 </div>
 
-<h3>Fonctionnalités</h3>
-<nav class="feature-grid" aria-label="Fonctionnalités">
-<button class="feature-btn" data-target="chat-screen">
-<span class="material-symbols-outlined">chat_bubble</span><span>Parler à l’IA</span>
-</button>
-<button class="feature-btn" data-target="appointments-screen">
-<span class="material-symbols-outlined">calendar_month</span><span>Rendez-vous</span>
-</button>
-<button class="feature-btn" data-target="meds-screen">
-<span class="material-symbols-outlined">pill</span><span>Médicaments</span>
-</button>
-<button class="feature-btn" data-target="symptom-logger-screen">
-<span class="material-symbols-outlined">local_hospital</span><span>Symptômes</span>
-</button>
-</nav>
-</section>
-
-<!-- =============== Chat =============== -->
-<section id="chat-screen" class="screen" aria-labelledby="chat-title">
-<header class="fixed-header">
-<button class="icon-btn" data-target="dashboard-screen" aria-label="Retour">
-<span class="material-symbols-outlined">arrow_back</span>
-</button>
-<h3 id="chat-title">Discussion santé</h3>
-<div aria-hidden="true" style="width:44px"></div>
-</header>
-
-<div class="chat-content" role="log" aria-live="polite"></div>
-
-<div class="chat-input-area">
-<input type="text" placeholder="Posez une question…" aria-label="Message" />
-<button class="icon-btn send-btn" aria-label="Envoyer">
-<span class="material-symbols-outlined">send</span>
-</button>
-</div>
-</section>
-
-<!-- =============== Symptom logger =============== -->
-<section id="symptom-logger-screen" class="screen" aria-labelledby="symptom-title">
-<header class="fixed-header">
-<button class="icon-btn" data-target="dashboard-screen" aria-label="Retour">
-<span class="material-symbols-outlined">arrow_back</span>
-</button>
-<h3 id="symptom-title">Suivi des symptômes</h3>
-<div aria-hidden="true" style="width:44px"></div>
-</header>
-
-<form id="symptom-form" class="content-form" novalidate>
-<label class="form-field">
-<span>Symptôme</span>
-<input id="symptom-description" required />
-</label>
-
-<label class="form-field">
-<span>Localisation</span>
-<select id="symptom-location" required>
-<option value="">— Choisissez —</option>
-<option value="tete">Tête</option>
-<option value="gorge">Gorge</option>
-<option value="ventre">Ventre</option>
-<option value="dos">Dos</option>
-</select>
-</label>
-
-<label class="form-field range-field">
-<span>Intensité : <strong id="intensity-value">5</strong>/10</span>
-<input id="symptom-intensity" type="range" min="0" max="10" value="5" />
-</label>
-
-<label class="form-field">
-<span>Facteurs aggravants</span>
-<input id="symptom-aggravating" />
-</label>
-
-<label class="form-field">
-<span>Facteurs apaisants</span>
-<input id="symptom-appeasing" />
-</label>
-
-<button id="symptom-submit-btn" type="button" class="btn-primary">Enregistrer</button>
-</form>
-</section>
-
-<!-- =============== Settings =============== -->
-<section id="settings-screen" class="screen" aria-labelledby="settings-title">
-<header class="fixed-header">
-<button class="icon-btn" data-target="dashboard-screen" aria-label="Retour">
-<span class="material-symbols-outlined">arrow_back</span>
-</button>
-<h3 id="settings-title">Profil & paramètres</h3>
-<div aria-hidden="true" style="width:44px"></div>
-</header>
-
-<div class="setting-block">
-<label class="switch">
-<input id="dark-toggle" type="checkbox" />
-<span class="slider"></span>
-</label>
-<span>Mode sombre</span>
-</div>
-</section>
-
-<!-- =============== Bottom nav =============== -->
-<nav id="bottom-nav" aria-label="Navigation principale">
-<button class="nav-btn active" data-target="dashboard-screen">
-<span class="material-symbols-outlined">home</span><span>Accueil</span>
-</button>
-<button class="nav-btn" data-target="appointments-screen">
-<span class="material-symbols-outlined">calendar_month</span><span>RDV</span>
-</button>
-<button class="nav-btn" data-target="chat-screen">
-<span class="material-symbols-outlined">chat_bubble</span><span>Parler</span>
-</button>
-<button class="nav-btn" data-target="health-record-screen">
-<span class="material-symbols-outlined">folder_open</span><span>Dossier</span>
-</button>
-<button class="nav-btn" data-target="settings-screen">
-<span class="material-symbols-outlined">person</span><span>Profil</span>
-</button>
-</nav>
+<div id="appointment-modal" class="modal-overlay">
+    <div class="modal-content">
+        <header class="modal-header">
+            <h3 id="appointment-modal-title">Nouveau rendez-vous</h3>
+            <button class="icon-btn close-modal-btn" aria-label="Fermer"><span class="material-symbols-outlined">close</span></button>
+        </header>
+        <form id="appointment-form">
+            <input type="hidden" id="appointment-id" />
+            <label class="form-field"><span>Titre</span><input type="text" id="appointment-title" placeholder="Ex: Bilan annuel Dr. Martin" required /></label>
+            <label class="form-field"><span>Date</span><input type="date" id="appointment-date" required /></label>
+            <label class="form-field"><span>Heure</span><input type="time" id="appointment-time" required /></label>
+            <label class="form-field"><span>Notes (optionnel)</span><textarea id="appointment-notes" rows="3"></textarea></label>
+            <div class="modal-actions">
+                <button id="delete-appointment-btn" type="button" class="btn-danger">Supprimer</button>
+                <button type="submit" class="btn-primary">Enregistrer</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script src="script.js"></script>
