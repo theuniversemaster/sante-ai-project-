@@ -1,300 +1,169 @@
-// SanteAI Script - V3.6
+// script.js — version complète refondue
+document.addEventListener("DOMContentLoaded", () => {
+/* ------------------ État ------------------ */
+let data = {};
+let currentUser = "";
 
-document.addEventListener('DOMContentLoaded', () => {
+const createUser = (name) => ({
+profile: {
+name,
+initials: name.charAt(0).toUpperCase(),
+age: "Non défini",
+memberSince: new Date().getFullYear(),
+},
+dashboard: { nextAppointment: "Aucun", medsTaken: 0, medsTotal: 0 },
+medicalHistory: {
+allergies: "Aucune",
+conditions: "Aucune",
+medications: "Aucun",
+vaccinations: "Aucune",
+},
+symptomLogs: [],
+chatHistory: [],
+});
 
-    // ===================================================================================
-    // 1. STATE MANAGEMENT & DATA
-    // ===================================================================================
-    let santeAIData = {};
-    let currentUser = localStorage.getItem('santeAI_currentUser') || '';
+function save() {
+if (currentUser) localStorage.setItem(`santeAI_${currentUser}`, JSON.stringify(data));
+}
+function load(username) {
+currentUser = username;
+data = JSON.parse(localStorage.getItem(`santeAI_${username}`)) || createUser(username);
+save();
+}
 
-    const createNewUserData = (username) => ({
-        profile: { 
-            name: username, 
-            initials: username.charAt(0).toUpperCase(), 
-            dob: "Non défini", 
-            sex: "Non défini", 
-            bloodType: "Non défini", 
-            memberSince: new Date().getFullYear(), 
-            age: "Non défini" 
-        },
-        medicalHistory: { allergies: "Aucune", conditions: "Aucune", medications: "Aucun", vaccinations: "Aucune" },
-        dashboard: { nextAppointment: "Aucun", medsTaken: 0, medsTotal: 0 },
-        symptomLogs: [], 
-        chatHistory: []
-    });
+/* ------------------ Navigation ------------------ */
+const screens = [...document.querySelectorAll(".screen")];
+const navBtns = [...document.querySelectorAll("[data-target]")];
 
-    function saveData() { 
-        if (currentUser) {
-            localStorage.setItem(`santeAIData_${currentUser}`, JSON.stringify(santeAIData)); 
-            localStorage.setItem('santeAI_currentUser', currentUser);
-        }
-    }
+function show(id) {
+screens.forEach((s) => s.classList.toggle("active", s.id === id));
+navBtns.forEach((b) => b.classList.toggle("active", b.dataset.target === id));
+document.querySelector("#bottom-nav").style.display =
+id === "welcome-screen" || id === "login-screen" ? "none" : "flex";
+}
 
-    function loadOrCreateUser(username) {
-        currentUser = username;
-        const savedData = localStorage.getItem(`santeAIData_${currentUser}`);
-        santeAIData = savedData ? JSON.parse(savedData) : createNewUserData(username);
-        saveData();
-    }
+document.body.addEventListener("click", (e) => {
+const btn = e.target.closest("[data-target]");
+if (btn && btn.id !== "login-btn") show(btn.dataset.target);
+});
 
-    function calculateAge(dobString) {
-        if (!dobString || dobString === "Non défini") return "Non défini";
-        const dob = new Date(dobString);
-        const diff_ms = Date.now() - dob.getTime();
-        const age_dt = new Date(diff_ms);
-        return Math.abs(age_dt.getUTCFullYear() - 1970);
-    }
-    
-    function logout() {
-        currentUser = '';
-        localStorage.removeItem('santeAI_currentUser');
-        navigateTo('welcome-screen');
-    }
+/* ------------------ Login ------------------ */
+document.querySelector("#login-btn").addEventListener("click", () => {
+const name = document.querySelector("#username").value.trim();
+if (!name) return alert("Veuillez indiquer un nom d’utilisateur.");
+load(name);
+renderUI();
+show("dashboard-screen");
+});
 
-    // ===================================================================================
-    // 2. UI NAVIGATION & RENDERING
-    // ===================================================================================
-    const allScreens = document.querySelectorAll('.screen');
-    const navButtons = document.querySelectorAll('.nav-btn');
-    const bottomNav = document.getElementById('bottom-nav');
+/* ------------------ Dashboard ------------------ */
+function renderUI() {
+const { profile, dashboard, medicalHistory } = data;
+// Header
+document.querySelector(".avatar-placeholder").textContent = profile.initials;
+document.querySelector(".profile-name").textContent = profile.name;
+document.querySelector(".profile-meta").textContent = `${profile.age} ans • Membre depuis ${profile.memberSince}`;
+// Cards
+document.querySelector("#dashboard-appointment").textContent = dashboard.nextAppointment;
+document.querySelector(
+"#dashboard-meds"
+).innerHTML = `${dashboard.medsTaken} / ${dashboard.medsTotal} <small>pris</small>`;
+}
 
-    function navigateTo(screenId) {
-        allScreens.forEach(screen => screen.classList.remove('active'));
-        const targetScreen = document.getElementById(screenId);
-        if (targetScreen) targetScreen.classList.add('active');
+/* ------------------ Chat ------------------ */
+const chatInput = document.querySelector(".chat-input-area input");
+const chatLog = document.querySelector(".chat-content");
 
-        navButtons.forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.target === screenId);
-        });
-        
-        bottomNav.style.display = (screenId === 'welcome-screen' || screenId === 'login-screen') ? 'none' : 'flex';
-    }
+function addMsg(role, txt) {
+const div = document.createElement("div");
+div.className = `chat-message ${role}-message`;
+div.innerHTML = txt.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+chatLog.appendChild(div);
+chatLog.scrollTop = chatLog.scrollHeight;
+}
 
-    function renderUI() {
-        if (!santeAIData.profile) return;
+async function send() {
+const text = chatInput.value.trim();
+if (!text) return;
+addMsg("user", text);
+data.chatHistory.push({ role: "user", content: text });
+chatInput.value = "";
 
-        santeAIData.profile.age = calculateAge(santeAIData.profile.dob);
+// Typing …
+const loader = document.createElement("div");
+loader.className = "chat-message assistant-message";
+loader.textContent = "…";
+chatLog.appendChild(loader);
+chatLog.scrollTop = chatLog.scrollHeight;
 
-        document.querySelector('#dashboard-screen .profile-name').textContent = santeAIData.profile.name;
-        document.querySelector('#dashboard-screen .avatar-placeholder').textContent = santeAIData.profile.initials;
-        document.querySelector('#dashboard-screen .profile-meta').innerHTML = `${santeAIData.profile.age} ans &bull; Membre depuis ${santeAIData.profile.memberSince}`;
-        document.getElementById('dashboard-appointment').textContent = santeAIData.dashboard.nextAppointment;
-        document.getElementById('dashboard-meds').innerHTML = `${santeAIData.dashboard.medsTaken}/${santeAIData.dashboard.medsTotal}`;
-        
-        document.getElementById('record-name').textContent = santeAIData.profile.name;
-        document.getElementById('record-dob').textContent = santeAIData.profile.dob;
-        document.getElementById('record-age').textContent = santeAIData.profile.age;
-        document.getElementById('record-sex').textContent = santeAIData.profile.sex;
-        document.getElementById('record-blood-type').textContent = santeAIData.profile.bloodType;
-        document.getElementById('record-allergies').textContent = santeAIData.medicalHistory.allergies;
-        document.getElementById('record-conditions').textContent = santeAIData.medicalHistory.conditions;
-        document.getElementById('record-medications').textContent = santeAIData.medicalHistory.medications;
-        document.getElementById('record-vaccinations').textContent = santeAIData.medicalHistory.vaccinations;
+try {
+const assistant = await askMistral([...data.chatHistory]);
+loader.remove();
+addMsg("assistant", assistant);
+data.chatHistory.push({ role: "assistant", content: assistant });
+save();
+} catch {
+loader.remove();
+addMsg(
+"assistant",
+"Désolé, une erreur est survenue. Merci de réessayer plus tard."
+);
+}
+}
+document.querySelector(".send-btn").addEventListener("click", send);
+chatInput.addEventListener("keypress", (e) => e.key === "Enter" && send());
 
-        document.getElementById('settings-profile-name').textContent = santeAIData.profile.name;
-        document.querySelector('#settings-screen .avatar-placeholder').textContent = santeAIData.profile.initials;
-        document.getElementById('settings-profile-meta').textContent = `Membre depuis ${santeAIData.profile.memberSince}`;
-        
-        renderChatHistory();
-    }
-    
-    function renderChatHistory() {
-        const chatContent = document.querySelector('#chat-screen .chat-content');
-        const suggestions = document.querySelector('.chat-suggestions');
-        chatContent.querySelectorAll('.chat-message').forEach(el => el.remove());
-        if (santeAIData.chatHistory.length > 0) {
-            suggestions.style.display = 'none';
-            santeAIData.chatHistory.forEach(msg => addMessageToChat(msg.role, msg.content, false, true));
-        } else {
-            suggestions.style.display = 'block';
-        }
-    }
-    
-    // ===================================================================================
-    // 3. EVENT LISTENERS
-    // ===================================================================================
-    function populateProfileModal() {
-        const dob = santeAIData.profile.dob;
-        document.getElementById('edit-dob').value = (dob && dob !== "Non défini") ? dob : '';
-        document.getElementById('edit-sex').value = santeAIData.profile.sex || "Non défini";
-        document.getElementById('edit-blood-type').value = santeAIData.profile.bloodType || "Non défini";
-        document.getElementById('edit-allergies').value = (santeAIData.medicalHistory.allergies !== "Aucune") ? santeAIData.medicalHistory.allergies : '';
-        document.getElementById('edit-conditions').value = (santeAIData.medicalHistory.conditions !== "Aucune") ? santeAIData.medicalHistory.conditions : '';
-    }
+async function askMistral(history) {
+const system = {
+role: "system",
+content:
+"Tu es SanteAI, assistant santé empathique. Jamais de diagnostic ni de prescription; conseille toujours de consulter un pro. Réponds en français en mettant les points essentiels en **gras**.",
+};
+const resp = await fetch("/.netlify/functions/ask-mistral", {
+method: "POST",
+body: JSON.stringify({ messages: [system, ...history] }),
+});
+const data = await resp.json();
+if (!resp.ok) throw new Error();
+return data.choices[0].message.content;
+}
 
-    function setupEventListeners() {
-        // ### CRITICAL FIX V3.6 ###
-        // This listener now ONLY triggers for elements with the 'js-nav-trigger' class.
-        document.body.addEventListener('click', (e) => {
-            const navTrigger = e.target.closest('.js-nav-trigger');
-            if (navTrigger) {
-                const targetScreenId = navTrigger.dataset.target;
-                if (targetScreenId) {
-                    navigateTo(targetScreenId);
-                }
-            }
-        });
+/* ------------------ Symptômes ------------------ */
+const rangeInput = document.querySelector("#symptom-intensity");
+const rangeVal = document.querySelector("#intensity-value");
+rangeInput.addEventListener("input", () => (rangeVal.textContent = rangeInput.value));
 
-        // --- Specific button listeners remain unchanged ---
-        document.getElementById('login-btn').addEventListener('click', handleLogin);
-        document.getElementById('logout-btn').addEventListener('click', logout);
-        document.getElementById('symptom-submit-btn').addEventListener('click', handleSymptomSubmit);
-        
-        document.getElementById('symptom-intensity').addEventListener('input', (e) => {
-            document.getElementById('intensity-value').textContent = e.target.value;
-        });
+document.querySelector("#symptom-submit-btn").addEventListener("click", () => {
+const desc = document.querySelector("#symptom-description").value.trim();
+if (!desc) return alert("Veuillez décrire le symptôme.");
+const log = {
+description: desc,
+location: document.querySelector("#symptom-location").value,
+intensity: rangeInput.value,
+aggravating: document.querySelector("#symptom-aggravating").value.trim(),
+appeasing: document.querySelector("#symptom-appeasing").value.trim(),
+time: new Date().toISOString(),
+};
+data.symptomLogs.push(log);
+save();
+alert("Symptôme enregistré !");
+document.querySelector("#symptom-form").reset();
+rangeVal.textContent = 5;
+show("dashboard-screen");
+});
 
-        // Chat listeners
-        const sendButton = document.querySelector('.chat-input-area .send-btn');
-        const chatInput = document.querySelector('.chat-input-area input');
-        sendButton.addEventListener('click', handleSendMessage);
-        chatInput.addEventListener('keypress', (e) => e.key === 'Enter' && handleSendMessage());
-        document.querySelectorAll('.suggestion-item').forEach(button => {
-            button.addEventListener('click', () => {
-                chatInput.value = button.dataset.prompt;
-                handleSendMessage();
-            });
-        });
+/* ------------------ Mode sombre ------------------ */
+const darkToggle = document.querySelector("#dark-toggle");
+function applyTheme() {
+document.documentElement.dataset.theme = darkToggle.checked ? "dark" : "light";
+localStorage.setItem("santeAI_theme", darkToggle.checked ? "dark" : "light");
+}
+darkToggle.addEventListener("change", applyTheme);
+if (localStorage.getItem("santeAI_theme") === "dark") {
+darkToggle.checked = true;
+applyTheme();
+}
 
-        // Modal listeners
-        const modal = document.getElementById('edit-profile-modal');
-        const openModal = () => {
-            populateProfileModal();
-            modal.style.display = 'flex';
-        };
-        document.getElementById('edit-profile-btn').addEventListener('click', openModal);
-        document.getElementById('edit-profile-btn-2').addEventListener('click', openModal);
-        document.getElementById('close-modal-btn').addEventListener('click', () => modal.style.display = 'none');
-        document.getElementById('profile-edit-form').addEventListener('submit', handleProfileUpdate);
-    }
-
-    // ===================================================================================
-    // 4. FUNCTIONAL FEATURES LOGIC
-    // ===================================================================================
-    function handleLogin() {
-        const usernameInput = document.getElementById('username');
-        const username = usernameInput.value.trim();
-        if (!username) { alert("Veuillez entrer un nom de profil."); return; }
-        loadOrCreateUser(username);
-        renderUI();
-        navigateTo('dashboard-screen');
-    }
-
-    function handleSymptomSubmit() {
-        const newSymptom = {
-            description: document.getElementById('symptom-description').value.trim(),
-            location: document.getElementById('symptom-location').value.trim(),
-            intensity: document.getElementById('symptom-intensity').value,
-            aggravating: document.getElementById('symptom-aggravating').value.trim(),
-            appeasing: document.getElementById('symptom-appeasing').value.trim(),
-            timestamp: new Date().toISOString()
-        };
-        if (!newSymptom.description) { alert("Veuillez décrire vos symptômes."); return; }
-        santeAIData.symptomLogs.push(newSymptom);
-        saveData();
-        alert("Symptômes enregistrés !");
-        document.getElementById('symptom-form').reset();
-        document.getElementById('intensity-value').textContent = '5';
-        navigateTo('dashboard-screen');
-    }
-
-    function handleProfileUpdate(e) {
-        e.preventDefault();
-        santeAIData.profile.dob = document.getElementById('edit-dob').value || "Non défini";
-        santeAIData.profile.sex = document.getElementById('edit-sex').value;
-        santeAIData.profile.bloodType = document.getElementById('edit-blood-type').value;
-        santeAIData.medicalHistory.allergies = document.getElementById('edit-allergies').value.trim() || "Aucune";
-        santeAIData.medicalHistory.conditions = document.getElementById('edit-conditions').value.trim() || "Aucune";
-        
-        saveData();
-        renderUI();
-        document.getElementById('edit-profile-modal').style.display = 'none';
-        alert("Profil mis à jour !");
-    }
-
-    // ===================================================================================
-    // 5. CHAT LOGIC & AI INTEGRATION
-    // ===================================================================================
-    const chatContentEl = document.querySelector('#chat-screen .chat-content');
-
-    function addMessageToChat(role, text, isTyping = false, fromHistory = false) {
-        document.querySelector('.chat-suggestions').style.display = 'none';
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('chat-message', `${role}-message`);
-
-        if (isTyping) {
-            messageDiv.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
-            messageDiv.id = 'typing-indicator';
-        } else {
-            messageDiv.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-        }
-        chatContentEl.appendChild(messageDiv);
-        chatContentEl.parentElement.scrollTop = chatContentEl.parentElement.scrollHeight;
-        return messageDiv;
-    }
-
-    async function handleSendMessage() {
-        const chatInput = document.querySelector('.chat-input-area input');
-        const userText = chatInput.value.trim();
-        if (userText === "") return;
-
-        addMessageToChat('user', userText);
-        santeAIData.chatHistory.push({ role: 'user', content: userText });
-        chatInput.value = "";
-        
-        const typingIndicator = addMessageToChat('assistant', '', true);
-
-        try {
-            const aiResponse = await askMistral(santeAIData.chatHistory);
-            typingIndicator.remove();
-            addMessageToChat('assistant', aiResponse);
-            santeAIData.chatHistory.push({ role: 'assistant', content: aiResponse });
-            saveData();
-        } catch (error) {
-            typingIndicator.remove();
-            addMessageToChat('assistant', "Désolé, une erreur s'est produite. Veuillez réessayer.");
-            console.error("Error with AI service:", error);
-        }
-    }
-    
-    async function askMistral(currentChatHistory) {
-        const systemPrompt = {
-            role: 'system',
-            content: `Tu es SanteAI, un assistant de santé IA empathique. Ton but est d'aider l'utilisateur à suivre ses symptômes et à comprendre son bien-être, en te basant sur les infos fournies. **Règles critiques:** 1. **NE JAMAIS** poser de diagnostic. 2. **NE JAMAIS** prescrire de traitement. 3. **TOUJOURS** recommander de consulter un professionnel de santé (médecin, pharmacien) pour un avis médical. 4. Utilise un ton rassurant et clair. 5. Réponds en français et formate les points importants en gras (**texte en gras**).`
-        };
-        const lastSymptom = santeAIData.symptomLogs.length > 0 ? santeAIData.symptomLogs.slice(-1)[0] : null;
-        let contextContent = `[CONTEXTE UTILISATEUR]\n- Nom: ${santeAIData.profile.name}\n- Âge: ${santeAIData.profile.age}\n- Sexe: ${santeAIData.profile.sex}\n- Allergies: ${santeAIData.medicalHistory.allergies}\n- Conditions préexistantes: ${santeAIData.medicalHistory.conditions}`;
-        if (lastSymptom) { contextContent += `\n- Dernier symptôme enregistré: ${lastSymptom.description} (Intensité: ${lastSymptom.intensity}/10)`; }
-        contextContent += `\n[FIN DU CONTEXTE]`;
-
-        const userContextPrompt = { role: 'user', content: contextContent };
-        const messagesForAPI = [ systemPrompt, userContextPrompt, ...currentChatHistory.slice(-10) ];
-
-        const response = await fetch('/.netlify/functions/ask-mistral', {
-            method: 'POST', body: JSON.stringify({ messages: messagesForAPI })
-        });
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || `API call failed with status: ${response.status}`);
-        }
-        const data = await response.json();
-        return data.choices[0].message.content;
-    }
-
-    // ===================================================================================
-    // 6. APP INITIALIZATION
-    // ===================================================================================
-    function initialize() {
-        setupEventListeners();
-        if (currentUser && localStorage.getItem(`santeAIData_${currentUser}`)) {
-            loadOrCreateUser(currentUser);
-            renderUI();
-            navigateTo('dashboard-screen');
-        } else {
-            navigateTo('welcome-screen');
-        }
-    }
-
-    initialize();
+/* ------------------ Init ------------------ */
+show("welcome-screen");
 });
