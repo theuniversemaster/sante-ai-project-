@@ -1,3 +1,5 @@
+// SanteAI Script - V3.5
+
 document.addEventListener('DOMContentLoaded', () => {
 
     // ===================================================================================
@@ -57,19 +59,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const navButtons = document.querySelectorAll('.nav-btn');
     const bottomNav = document.getElementById('bottom-nav');
 
+    // CORRECTED in V3.5
     function navigateTo(screenId) {
         allScreens.forEach(screen => screen.classList.remove('active'));
         const targetScreen = document.getElementById(screenId);
         if (targetScreen) targetScreen.classList.add('active');
 
-        // Update nav button active state, including special cases
+        // CORRECTED & SIMPLIFIED: Now, only the button corresponding to the screenId will be active.
         navButtons.forEach(btn => {
-            const isTarget = btn.dataset.target === screenId;
-            // The 'Profil' button in the nav should be active for both 'health-record-screen' and 'settings-screen'
-            const isProfileSection = (screenId === 'health-record-screen' || screenId === 'settings-screen') && 
-                                     (btn.dataset.target === 'health-record-screen' || btn.dataset.target === 'settings-screen');
-            // We'll highlight the "Dossier" nav button for both record and settings
-            btn.classList.toggle('active', btn.dataset.target === screenId || (btn.dataset.target === 'health-record-screen' && screenId === 'settings-screen'));
+            btn.classList.toggle('active', btn.dataset.target === screenId);
         });
         
         bottomNav.style.display = (screenId === 'welcome-screen' || screenId === 'login-screen') ? 'none' : 'flex';
@@ -122,6 +120,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // ===================================================================================
     // 3. EVENT LISTENERS
     // ===================================================================================
+    
+    // NEW HELPER FUNCTION in V3.5
+    function populateProfileModal() {
+        // Populate with profile data
+        const dob = santeAIData.profile.dob;
+        // The date input requires YYYY-MM-DD format. Handle "Non défini".
+        document.getElementById('edit-dob').value = (dob && dob !== "Non défini") ? dob : '';
+        document.getElementById('edit-sex').value = santeAIData.profile.sex || "Non défini";
+        document.getElementById('edit-blood-type').value = santeAIData.profile.bloodType || "Non défini";
+        
+        // Populate with medical history data
+        document.getElementById('edit-allergies').value = (santeAIData.medicalHistory.allergies !== "Aucune") ? santeAIData.medicalHistory.allergies : '';
+        document.getElementById('edit-conditions').value = (santeAIData.medicalHistory.conditions !== "Aucune") ? santeAIData.medicalHistory.conditions : '';
+    }
+
+    // UPDATED in V3.5
     function setupEventListeners() {
         // Main navigation click listener
         document.body.addEventListener('click', (e) => {
@@ -151,10 +165,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Modal listeners
+        // Modal listeners (UPDATED)
         const modal = document.getElementById('edit-profile-modal');
-        document.getElementById('edit-profile-btn').addEventListener('click', () => modal.style.display = 'flex');
-        document.getElementById('edit-profile-btn-2').addEventListener('click', () => modal.style.display = 'flex');
+        const openModal = () => {
+            populateProfileModal(); // <-- FIX IS HERE: Populate form before showing
+            modal.style.display = 'flex';
+        };
+        document.getElementById('edit-profile-btn').addEventListener('click', openModal);
+        document.getElementById('edit-profile-btn-2').addEventListener('click', openModal);
         document.getElementById('close-modal-btn').addEventListener('click', () => modal.style.display = 'none');
         document.getElementById('profile-edit-form').addEventListener('submit', handleProfileUpdate);
     }
