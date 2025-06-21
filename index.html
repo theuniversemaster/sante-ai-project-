@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>SanteAI</title>
 
     <!-- Google Fonts: Inter -->
@@ -10,8 +10,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Google Material Symbols (for icons) -->
+    <!-- Google Material Symbols (filled for active state) -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" />
 
     <!-- Local Stylesheet -->
     <link rel="stylesheet" href="style.css">
@@ -24,25 +25,20 @@
             <div class="welcome-icon-container">
                 <span class="material-symbols-outlined">health_and_safety</span>
             </div>
-            <h1>Bienvenue à SanteAI</h1>
-            <p class="subtitle">Votre compagnon de santé personnel, alimenté par l'IA, pour vous aider à gérer votre bien-être.</p>
+            <h1>Bienvenue sur SanteAI</h1>
+            <p class="subtitle">Votre compagnon de santé personnel, pour vous aider à gérer votre bien-être.</p>
             <button class="btn btn-primary" data-target="login-screen">Commencer</button>
         </div>
 
-        <!-- ===== Login Screen ===== -->
+        <!-- ===== Login/Profile Screen (Simplified) ===== -->
         <div id="login-screen" class="screen">
-            <h2>Bienvenue</h2>
+            <h2>Quel profil utiliser ?</h2>
+            <p class="subtitle">Entrez un nom pour créer un nouveau profil ou charger un profil existant.</p>
             <div class="form-group">
-                <input type="text" id="username" placeholder="Nom d'utilisateur">
-                <label for="username">Nom d'utilisateur</label>
+                <input type="text" id="username" placeholder="Ex: Jean Dupont">
+                <label for="username">Nom du profil</label>
             </div>
-            <div class="form-group">
-                <input type="password" id="password" placeholder="Mot de passe">
-                <label for="password">Mot de passe</label>
-            </div>
-            <button class="btn btn-primary" id="login-btn">Se connecter</button>
-            <p class="link-text">Vous n'avez pas de compte ?</p>
-            <button class="btn btn-secondary">S'inscrire</button>
+            <button class="btn btn-primary" id="login-btn">Accéder au profil</button>
         </div>
         
         <!-- ===== Dashboard Screen ===== -->
@@ -55,21 +51,18 @@
                         <p class="profile-meta"></p>
                     </div>
                 </div>
-                <button class="icon-btn" data-target="settings-screen">
-                    <span class="material-symbols-outlined">settings</span>
-                </button>
             </header>
             
             <section class="dashboard-section">
-                <h3>Aperçu</h3>
+                <h3>Aperçu rapide</h3>
                 <div class="card-grid">
                     <div class="card">
-                        <p class="card-title">Prochain rendez-vous</p>
-                        <p class="card-highlight" id="dashboard-appointment"></p>
+                        <p class="card-title">Prochain RDV</p>
+                        <p class="card-highlight" id="dashboard-appointment">Aucun</p>
                     </div>
                     <div class="card">
                         <p class="card-title">Médicaments</p>
-                        <p class="card-highlight" id="dashboard-meds"></p>
+                        <p class="card-highlight" id="dashboard-meds">0/0</p>
                     </div>
                 </div>
             </section>
@@ -80,14 +73,14 @@
                     <button class="feature-btn" data-target="chat-screen">
                         <span class="material-symbols-outlined">chat_bubble</span> Parler à l'IA
                     </button>
-                    <button class="feature-btn" data-target="appointments-screen">
-                        <span class="material-symbols-outlined">calendar_month</span> Rendez-vous
-                    </button>
-                    <button class="feature-btn" data-target="meds-screen">
-                        <span class="material-symbols-outlined">pill</span> Médicaments
-                    </button>
                     <button class="feature-btn" data-target="symptom-logger-screen">
                         <span class="material-symbols-outlined">local_hospital</span> Symptômes
+                    </button>
+                    <button class="feature-btn" data-target="health-record-screen">
+                        <span class="material-symbols-outlined">folder_managed</span> Dossier
+                    </button>
+                    <button class="feature-btn" data-target="settings-screen">
+                         <span class="material-symbols-outlined">settings</span> Paramètres
                     </button>
                 </div>
             </section>
@@ -97,19 +90,21 @@
         <div id="chat-screen" class="screen">
             <header class="screen-header fixed-header">
                 <button class="icon-btn back-btn" data-target="dashboard-screen">
-                    <span class="material-symbols-outlined">arrow_back</span>
+                    <span class="material-symbols-outlined">arrow_back_ios_new</span>
                 </button>
-                <h3>Santé</h3>
+                <h3>Assistant Santé</h3>
                 <div style="width: 44px;"></div> <!-- Spacer -->
             </header>
-            <div class="chat-content">
-                <div class="chat-suggestions">
-                    <h4>Comment puis-je vous aider aujourd'hui ?</h4>
-                    <button class="suggestion-item" data-prompt="J'ai mal à la tête">J'ai mal à la tête <span class="material-symbols-outlined">arrow_forward</span></button>
-                    <button class="suggestion-item" data-prompt="Je me sens fatigué">Je me sens fatigué <span class="material-symbols-outlined">arrow_forward</span></button>
-                    <button class="suggestion-item" data-prompt="J'ai de la fièvre">J'ai de la fièvre <span class="material-symbols-outlined">arrow_forward</span></button>
+            <div class="chat-content-wrapper">
+                <div class="chat-content">
+                    <div class="chat-suggestions">
+                        <h4>Comment puis-je vous aider ?</h4>
+                        <button class="suggestion-item" data-prompt="J'ai mal à la tête">J'ai mal à la tête</button>
+                        <button class="suggestion-item" data-prompt="Je me sens très fatigué(e)">Je me sens très fatigué(e)</button>
+                        <button class="suggestion-item" data-prompt="Quels sont les effets secondaires de l'ibuprofène ?">Quels sont les effets secondaires de l'ibuprofène ?</button>
+                    </div>
+                    <!-- Chat messages will be dynamically added here by JS -->
                 </div>
-                 <!-- Chat messages will be dynamically added here by JS -->
             </div>
             <div class="chat-input-area">
                 <input type="text" placeholder="Posez une question...">
@@ -121,41 +116,35 @@
 
         <!-- ===== Symptom Logger Screen ===== -->
         <div id="symptom-logger-screen" class="screen">
-            <form id="symptom-form">
-                <header class="screen-header">
-                    <button class="icon-btn back-btn" data-target="dashboard-screen">
-                        <span class="material-symbols-outlined">arrow_back</span>
-                    </button>
-                    <h3>Suivi des Symptômes</h3>
-                    <div style="width: 44px;"></div> <!-- Spacer -->
-                </header>
+            <header class="screen-header">
+                <button class="icon-btn back-btn" data-target="dashboard-screen">
+                    <span class="material-symbols-outlined">arrow_back_ios_new</span>
+                </button>
+                <h3>Nouveau Symptôme</h3>
+                <div style="width: 44px;"></div>
+            </header>
+            <form id="symptom-form" class="content-form">
                 <div class="form-group">
+                    <label for="symptom-description">Décrivez vos symptômes</label>
                     <input type="text" id="symptom-description" placeholder="Ex: Mal de tête, nausées...">
-                    <label for="symptom-description">Symptômes</label>
                 </div>
                 <div class="form-group">
-                    <select id="symptom-location">
-                        <option value="" disabled selected>Sélectionnez une zone</option>
-                        <option value="tete">Tête</option>
-                        <option value="gorge">Gorge</option>
-                        <option value="ventre">Ventre</option>
-                        <option value="dos">Dos</option>
-                    </select>
-                    <label for="symptom-location">Localisation de la douleur</label>
+                    <label for="symptom-location">Localisation (optionnel)</label>
+                    <input type="text" id="symptom-location" placeholder="Ex: Côté droit de la tête">
                 </div>
                 <div class="form-group">
-                    <label for="symptom-intensity">Intensité de la douleur: <span id="intensity-value">5</span>/10</label>
+                    <label for="symptom-intensity">Intensité : <span id="intensity-value">5</span>/10</label>
                     <input type="range" id="symptom-intensity" min="0" max="10" value="5" class="slider">
                 </div>
                 <div class="form-group">
+                    <label for="symptom-aggravating">Facteurs aggravants (optionnel)</label>
                     <input type="text" id="symptom-aggravating" placeholder="Ex: La lumière, le bruit...">
-                    <label for="symptom-aggravating">Facteurs aggravants</label>
                 </div>
                  <div class="form-group">
+                    <label for="symptom-appeasing">Facteurs apaisants (optionnel)</label>
                     <input type="text" id="symptom-appeasing" placeholder="Ex: Le repos, l'obscurité...">
-                    <label for="symptom-appeasing">Facteurs apaisants</label>
                 </div>
-                <button class="btn btn-primary" type="button" id="symptom-submit-btn">Soumettre</button>
+                <button class="btn btn-primary" type="button" id="symptom-submit-btn">Enregistrer le symptôme</button>
             </form>
         </div>
 
@@ -163,75 +152,99 @@
         <div id="health-record-screen" class="screen">
              <header class="screen-header">
                 <button class="icon-btn back-btn" data-target="dashboard-screen">
-                    <span class="material-symbols-outlined">arrow_back</span>
+                    <span class="material-symbols-outlined">arrow_back_ios_new</span>
                 </button>
                 <h3>Dossier de Santé</h3>
-                <div style="width: 44px;"></div> <!-- Spacer -->
-            </header>
-            <section class="record-section">
-                <h4>Informations personnelles</h4>
-                <div class="record-item"><span class="record-label">Nom</span><span class="record-value" id="record-name"></span></div>
-                <div class="record-item"><span class="record-label">Date de naissance</span><span class="record-value" id="record-dob"></span></div>
-                <div class="record-item"><span class="record-label">Sexe</span><span class="record-value" id="record-sex"></span></div>
-                <div class="record-item"><span class="record-label">Groupe sanguin</span><span class="record-value" id="record-blood-type"></span></div>
-            </section>
-            <section class="record-section">
-                <h4>Historique médical</h4>
-                <div class="record-item"><span class="record-label">Allergies</span><span class="record-value" id="record-allergies"></span></div>
-                <div class="record-item"><span class="record-label">Conditions médicales</span><span class="record-value" id="record-conditions"></span></div>
-                <div class="record-item"><span class="record-label">Médicaments actuels</span><span class="record-value" id="record-medications"></span></div>
-                <div class="record-item"><span class="record-label">Vaccinations</span><span class="record-value"id="record-vaccinations"></span></div>
-            </section>
-        </div>
-
-        <!-- ===== Appointments Screen (Placeholder) ===== -->
-        <div id="appointments-screen" class="screen">
-            <header class="screen-header">
-                <button class="icon-btn back-btn" data-target="dashboard-screen">
-                    <span class="material-symbols-outlined">arrow_back</span>
-                </button>
-                <h3>Rendez-vous</h3>
-                <button class="icon-btn">
-                    <span class="material-symbols-outlined">add_circle</span>
+                <button class="icon-btn" id="edit-profile-btn">
+                    <span class="material-symbols-outlined">edit</span>
                 </button>
             </header>
-            <div class="placeholder-content">
-                <span class="material-symbols-outlined">calendar_month</span>
-                <p>Aucun rendez-vous à venir.</p>
-                <p class="subtitle">Appuyez sur + pour en ajouter un.</p>
+            <div class="record-container">
+                <section class="record-section">
+                    <h4>Informations personnelles</h4>
+                    <div class="record-item"><span class="record-label">Nom</span><span class="record-value" id="record-name"></span></div>
+                    <div class="record-item"><span class="record-label">Date de naissance</span><span class="record-value" id="record-dob"></span></div>
+                    <div class="record-item"><span class="record-label">Âge</span><span class="record-value" id="record-age"></span></div>
+                    <div class="record-item"><span class="record-label">Sexe</span><span class="record-value" id="record-sex"></span></div>
+                    <div class="record-item"><span class="record-label">Groupe sanguin</span><span class="record-value" id="record-blood-type"></span></div>
+                </section>
+                <section class="record-section">
+                    <h4>Historique médical</h4>
+                    <div class="record-item"><span class="record-label">Allergies</span><span class="record-value" id="record-allergies"></span></div>
+                    <div class="record-item"><span class="record-label">Conditions</span><span class="record-value" id="record-conditions"></span></div>
+                    <div class="record-item"><span class="record-label">Médicaments</span><span class="record-value" id="record-medications"></span></div>
+                    <div class="record-item"><span class="record-label">Vaccinations</span><span class="record-value" id="record-vaccinations"></span></div>
+                </section>
             </div>
         </div>
 
-        <!-- ===== Meds Screen (Placeholder) ===== -->
-        <div id="meds-screen" class="screen">
-            <header class="screen-header">
-                <button class="icon-btn back-btn" data-target="dashboard-screen">
-                    <span class="material-symbols-outlined">arrow_back</span>
-                </button>
-                <h3>Médicaments</h3>
-                <button class="icon-btn">
-                    <span class="material-symbols-outlined">add_circle</span>
-                </button>
-            </header>
-            <div class="placeholder-content">
-                <span class="material-symbols-outlined">pill</span>
-                <p>Aucun médicament enregistré.</p>
-                <p class="subtitle">Appuyez sur + pour en ajouter un.</p>
-            </div>
-        </div>
-
-        <!-- ===== Settings/Profile Screen (Placeholder) ===== -->
+        <!-- ===== Settings/Profile Screen (NOW FUNCTIONAL) ===== -->
         <div id="settings-screen" class="screen">
             <header class="screen-header">
                  <button class="icon-btn back-btn" data-target="dashboard-screen">
-                    <span class="material-symbols-outlined">arrow_back</span>
+                    <span class="material-symbols-outlined">arrow_back_ios_new</span>
                 </button>
                 <h3>Profil et Paramètres</h3>
-                 <div style="width: 44px;"></div> <!-- Spacer -->
+                 <div style="width: 44px;"></div>
             </header>
-            <div class="placeholder-content">
-                <span class="material-symbols-outlined">settings</span>
-                <p>Les options de profil et les paramètres de l'application apparaîtront ici.</p>
+            <div class="settings-content">
+                <div class="profile-card">
+                    <div class="avatar-placeholder large"></div>
+                    <h3 id="settings-profile-name"></h3>
+                    <p id="settings-profile-meta"></p>
+                    <button class="btn btn-secondary" id="edit-profile-btn-2">Modifier le profil</button>
+                </div>
+                <div class="settings-list">
+                    <button class="settings-item">
+                        <span class="material-symbols-outlined">notifications</span>Notifications
+                        <span class="material-symbols-outlined arrow">chevron_right</span>
+                    </button>
+                    <button class="settings-item">
+                        <span class="material-symbols-outlined">security</span>Sécurité & Confidentialité
+                        <span class="material-symbols-outlined arrow">chevron_right</span>
+                    </button>
+                    <button class="settings-item">
+                        <span class="material-symbols-outlined">help_center</span>Aide et Support
+                        <span class="material-symbols-outlined arrow">chevron_right</span>
+                    </button>
+                </div>
+                <button class="btn btn-danger" id="logout-btn">Changer de profil</button>
+            </div>
+        </div>
+        
+        <!-- ===== Appointments Screen (Proper Empty State) ===== -->
+        <div id="appointments-screen" class="screen">
+            <header class="screen-header">
+                <button class="icon-btn back-btn" data-target="dashboard-screen">
+                    <span class="material-symbols-outlined">arrow_back_ios_new</span>
+                </button>
+                <h3>Rendez-vous</h3>
+                <button class="icon-btn add-btn">
+                    <span class="material-symbols-outlined">add_circle</span>
+                </button>
+            </header>
+            <div class="empty-state">
+                <div class="empty-state-icon"><span class="material-symbols-outlined">calendar_month</span></div>
+                <h4>Aucun rendez-vous</h4>
+                <p>Appuyez sur '+' pour ajouter votre premier rendez-vous.</p>
+            </div>
+        </div>
+
+        <!-- ===== Meds Screen (Proper Empty State) ===== -->
+        <div id="meds-screen" class="screen">
+            <header class="screen-header">
+                <button class="icon-btn back-btn" data-target="dashboard-screen">
+                    <span class="material-symbols-outlined">arrow_back_ios_new</span>
+                </button>
+                <h3>Médicaments</h3>
+                <button class="icon-btn add-btn">
+                    <span class="material-symbols-outlined">add_circle</span>
+                </button>
+            </header>
+             <div class="empty-state">
+                <div class="empty-state-icon"><span class="material-symbols-outlined">pill</span></div>
+                <h4>Aucun médicament</h4>
+                <p>Appuyez sur '+' pour ajouter un traitement à suivre.</p>
             </div>
         </div>
 
@@ -252,7 +265,7 @@
             Parler
         </button>
         <button class="nav-btn" data-target="health-record-screen">
-            <span class="material-symbols-outlined">folder_open</span>
+            <span class="material-symbols-outlined">folder_managed</span>
             Dossier
         </button>
          <button class="nav-btn" data-target="settings-screen">
@@ -260,6 +273,50 @@
             Profil
         </button>
     </nav>
+    
+    <!-- Edit Profile Modal -->
+    <div id="edit-profile-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3>Modifier le profil</h3>
+                <button class="icon-btn" id="close-modal-btn"><span class="material-symbols-outlined">close</span></button>
+            </header>
+            <form id="profile-edit-form">
+                <div class="form-group">
+                    <label for="edit-dob">Date de naissance</label>
+                    <input type="date" id="edit-dob">
+                </div>
+                <div class="form-group">
+                    <label for="edit-sex">Sexe</label>
+                    <select id="edit-sex">
+                        <option value="Non défini">Non défini</option>
+                        <option value="Homme">Homme</option>
+                        <option value="Femme">Femme</option>
+                        <option value="Autre">Autre</option>
+                    </select>
+                </div>
+                 <div class="form-group">
+                    <label for="edit-blood-type">Groupe sanguin</label>
+                    <select id="edit-blood-type">
+                        <option value="Non défini">Non défini</option>
+                        <option value="A+">A+</option> <option value="A-">A-</option>
+                        <option value="B+">B+</option> <option value="B-">B-</option>
+                        <option value="AB+">AB+</option> <option value="AB-">AB-</option>
+                        <option value="O+">O+</option> <option value="O-">O-</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-allergies">Allergies</label>
+                    <input type="text" id="edit-allergies" placeholder="Ex: Pollen, arachides">
+                </div>
+                <div class="form-group">
+                    <label for="edit-conditions">Conditions médicales</label>
+                    <input type="text" id="edit-conditions" placeholder="Ex: Asthme, hypertension">
+                </div>
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+            </form>
+        </div>
+    </div>
     
     <script src="script.js"></script>
 
